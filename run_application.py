@@ -5,6 +5,8 @@ from PyQt6.QtGui import *
 from random import *
 from pygame import *
 
+import os
+
 reiting = {
     'clicer': 0, 
     'history_1': 0,
@@ -40,7 +42,7 @@ color = [
     'QPushButton {background-color: #D2691E}'
 ]
 
-class MainWindo(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         mixer.init()
@@ -66,12 +68,12 @@ class MainWindo(QWidget):
         
         self.modal_dialog = None
 
-        self.music_file = "virus.mp3" 
+        self.music_file = os.path.join('static/sounds/virus.mp3')
         mixer.music.load(self.music_file)
 
     def open_modal_dialog(self):
         self.nickname = self.nickname_input.text()
-        self.modal_dialog = Window(self)
+        self.modal_dialog = Window_menu(self)
         self.modal_dialog.setWindowTitle("Модальное окно")
         self.modal_dialog.label.setText(f"Привет, {self.nickname}!")
 
@@ -84,7 +86,7 @@ class AboutWindow(QWidget):
 
         self.setWindowTitle('О программе')
 
-        self.text = open("О проекте.txt", 'r', encoding='utf8')
+        self.text = open("about.txt", 'r', encoding='utf8')
         
         self.setLayout(QVBoxLayout(self))
         self.info = QLabel(self)
@@ -98,7 +100,7 @@ class Window_About(QMainWindow):
         super(Window_About, self).__init__()
 
         self.setWindowTitle("Привет! Введите свой крутой ник-нейм")
-        self.setCentralWidget(MainWindo())
+        self.setCentralWidget(MainWindow())
 
         self.about_action = QAction(self)
         self.about_action.setText('О программе')
@@ -110,7 +112,7 @@ class Window_About(QMainWindow):
     def about(self):
         self.about_window.show()
 
-class Window(QDialog):
+class Window_menu(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -452,7 +454,7 @@ class Window_Poshalko(QDialog):
         super().__init__(parent)
         self.showFullScreen()
 
-        self.background_image = QPixmap("no1.jpg") 
+        self.background_image = QPixmap(os.path.join('static/img/cat_screamer.jpg')) 
 
     def paintEvent(self, event):
         painter = QPainter(self)
