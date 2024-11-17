@@ -4,6 +4,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from random import *
 from pygame import *
+from database.dao.dao import UserDAO
 
 import os
 
@@ -52,6 +53,9 @@ class MainWindow(QWidget):
         self.setStyleSheet("background-color: #FFFAFA;") 
         
         self.nickname_label = QLabel("Введите крутой ник-нейм", self)
+
+        
+
         self.nickname_input = QLineEdit(self)
         self.nickname_label.setFont(QFont('Arial', 25))
         self.nickname_label.setStyleSheet("color: #FF7F50;")
@@ -72,10 +76,17 @@ class MainWindow(QWidget):
         mixer.music.load(self.music_file)
 
     def open_modal_dialog(self):
+        
         self.nickname = self.nickname_input.text()
-        self.modal_dialog = Window_menu(self)
-        self.modal_dialog.setWindowTitle("Модальное окно")
-        self.modal_dialog.label.setText(f"Привет, {self.nickname}!")
+        if UserDAO.find_one_or_none(username=self.nickname):
+            self.modal_dialog = Window_menu(self)
+            self.modal_dialog.setWindowTitle("Модальное окно")
+            self.modal_dialog.label.setText(f"Привет, {self.nickname}!")
+        else:
+            UserDAO.add(username=self.nickname)
+            self.modal_dialog = Window_menu(self)
+            self.modal_dialog.setWindowTitle("Модальное окно")
+            self.modal_dialog.label.setText(f"Привет новый пользователь, {self.nickname}!")
 
         self.modal_dialog.show()
 
