@@ -6,6 +6,7 @@ from random import *
 from pygame import *
 import pygame as pg
 import os
+from database.dao.dao import UserDAO
 
 reiting = {
     'clicer': 0, 
@@ -42,7 +43,7 @@ color = [
     'QPushButton {background-color: #D2691E}'
 ]
 
-user = {
+'''user = {
     'Имя пользователя': None,
     'Кликов в минуту': 0,
     'Музыкальная викторина': 0,
@@ -51,6 +52,11 @@ user = {
     'Историческая викторина3': 0,
     'Проверка на ловкость': 'Не пройденна',
     'Проверка на дебила': 'Не пройденна'
+}
+'''
+user = {
+    'username': None,
+    'best_score': 0,
 }
 
 class MainWindow(QWidget):
@@ -87,11 +93,33 @@ class MainWindow(QWidget):
         self.nickname = self.nickname_input.text()
         if self.nickname == '':
             self.nickname = 'Player'
-        self.modal_dialog = Window_menu(self)
+            if UserDAO.find_one_or_none(username=self.nickname):
+                self.nickname = 'Player1'
+            if UserDAO.find_one_or_none(username=self.nickname):
+                self.nickname = 'Player2'
+            if UserDAO.find_one_or_none(username=self.nickname):
+                self.nickname = 'Player3'
+            if UserDAO.find_one_or_none(username=self.nickname):
+                self.nickname = 'Player4'
+            if UserDAO.find_one_or_none(username=self.nickname):
+                self.nickname = 'Player5'
+
+        if UserDAO.find_one_or_none(username=self.nickname):
+            self.modal_dialog = Window_menu(self)
+            self.modal_dialog.setWindowTitle("Модальное окно")
+            self.modal_dialog.label.setText(f"Привет, {self.nickname}!")
+        else:
+            UserDAO.add(username=self.nickname)
+            self.modal_dialog = Window_menu(self)
+            self.modal_dialog.setWindowTitle("Модальное окно")
+            self.modal_dialog.label.setText(f"Привет новый\nпользователь, {self.nickname}!")
+
+        '''self.modal_dialog = Window_menu(self)
         self.modal_dialog.setWindowTitle("Модальное окно")
-        self.modal_dialog.label.setText(f"Привет, {self.nickname}!")
+        self.modal_dialog.label.setText(f"Привет, {self.nickname}!")'''
         global user
-        user['Имя пользователя'] = self.nickname
+        '''user['Имя пользователя'] = self.nickname'''
+        user['username'] = self.nickname
         self.next_button.setEnabled(False)
 
         self.modal_dialog.show()
@@ -266,10 +294,10 @@ class Window_Clicker(QDialog):
         self.click_button.setText(f"Clicks per minute: {clicks_per_minute}")
         self.click_button.setDisabled(True)
         global user
-        if user['Кликов в минуту'] > clicks_per_minute:
+        '''if user['Кликов в минуту'] > clicks_per_minute:
             pass
         else:
-            user['Кликов в минуту'] == clicks_per_minute
+            user['Кликов в минуту'] == clicks_per_minute'''
         
 
 class HistoryQuiz_1(QDialog):
@@ -863,7 +891,11 @@ class Close_Modal(QDialog):
         self.close()
 
 class Rating_Modal(QDialog):
-    pass
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('Rating')
+        self.setGeometry(600, 300, 200, 200)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
