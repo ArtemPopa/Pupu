@@ -10,7 +10,7 @@ class BaseDAO:
     @classmethod
     def update(cls, value):
         with session_maker() as session:
-            session.execute(sqlalchemy_update(cls.model).where(cls.model.username == value))
+            session.execute(sqlalchemy_update(cls.model).where(cls.model.best_score == value))
 
     @classmethod
     def find_one_or_none(cls, **filter_by):
